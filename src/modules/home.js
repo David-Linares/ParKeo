@@ -8,23 +8,31 @@ import {
   TextInput,
   Image,
   Platform,
-  PermissionsAndroid
+  PermissionsAndroid,
+  TouchableOpacity,
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import firebase from 'react-native-firebase';
-const { width, height } = Dimensions.get('window');
-import { FlatList } from 'react-native-gesture-handler';
 import Geolocation from '@react-native-community/geolocation';
 import { regionContainingPoints } from '../helpers/helpers';
+import {FlatList} from 'react-native-gesture-handler';
 
-const timeList = [{ id: 1, name: "Indefinido", isSelected: false }, { id: 2, name: "Fijo", isSelected: false },];
-const vehicleTypeList = [{ id: 1, name: "1", isSelected: false }, { id: 2, name: "2", isSelected: false },];
 const initialRegion = {
   latitude: 4.6589943,
   longitude: -74.1081384,
   latitudeDelta: 0.0922,
   longitudeDelta: 0.0421,
 }
+const {width, height} = Dimensions.get('window');
+
+const timeList = [
+  {id: 1, name: 'Indefinido', isSelected: false},
+  {id: 2, name: 'Fijo', isSelected: false},
+];
+const vehicleTypeList = [
+  {id: 1, name: '1', isSelected: false},
+  {id: 2, name: '2', isSelected: false},
+];
 
 export default class Home extends PureComponent {
   constructor(props) {
@@ -46,9 +54,11 @@ export default class Home extends PureComponent {
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421,
       },
-      markers: []
+      markers: [],
+      parkingSelected: null,
     };
   }
+
 
   onLogin = () => {
     const { email, password } = this.state.user;
@@ -69,6 +79,10 @@ export default class Home extends PureComponent {
 
   UNSAFE_componentWillMount() {
     this.getUserLocation();
+    setTimeout(()=>{
+      this.setState({parkingSelected:"selected"})
+        
+    },5000);
   }
 
   getUserLocation() {
@@ -147,8 +161,7 @@ export default class Home extends PureComponent {
               flexDirection: 'row',
               paddingHorizontal: 15,
             }}>
-            <View
-              style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+            <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
               <Text>Tipo de vehiculo</Text>
               <FlatList
                 horizontal={true}
@@ -161,19 +174,86 @@ export default class Home extends PureComponent {
               style={{
                 flex: 1,
                 flexDirection: 'row',
-                alignItems: 'center'
+                alignItems: 'center',
               }}>
               <Text>Tiempo</Text>
               <FlatList
                 horizontal={true}
                 data={this.state.timeList}
+                extraData={this.state}
                 keyExtractor={(item, index) => index}
-                renderItem={({ item }) => <Text>{item.name}</Text>}
+                renderItem={({item}) => this.renderItemTime(item)}
               />
             </View>
           </View>
+          {this.getParkingSelected()}
         </View>
       </SafeAreaView>
+    );
+  }
+
+  renderItemTime(item) {
+    const isSelected = item.isSelected;
+    return (
+      <TouchableOpacity
+        onPress={() => this.onPressSelectedTime(item)}
+        style={[isSelected ? {backgroundColor: '#fd8f52'} : {}]}>
+        <Text>{item.name}</Text>
+      </TouchableOpacity>
+    );
+  }
+
+  onPressSelectedTime = itemSelected => {
+    let timeList = this.state.timeList;
+    timeList = timeList.map((item, index) => {
+      item.isSelected = item.id == itemSelected.id;
+      return item;
+    });
+
+    this.setState({timeList});
+  };
+
+  getParkingSelected() {
+    let parkingSelected = this.state.parkingSelected;
+    if (parkingSelected == null) {
+      return null;
+    }
+    return (
+      <View
+        style={{
+          height: 200,
+          backgroundColor: 'white',
+          paddingHorizontal: 70,
+          paddingVertical: 40,
+        }}>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <View style={{flex: 0.8}}>
+            <Image
+              style={{width: 60, height: 60}}
+              source={require('../assets/images/onboarding2.png')}
+            />
+          </View>
+          <View style={{flex: 1.2}}>
+            <View style={{backgroundColor: 'white'}}>
+              <Text style={{fontSize: 13}}>Calle 22 # 1132131</Text>
+              <Text style={{fontSize: 13}}> 8:00 am - 8:00 pm</Text>
+              <Text style={{fontSize: 13}}> 120 cop/min </Text>
+              <Text style={{fontSize: 13}}>Reserva inmediata</Text>
+            </View>
+          </View>
+        </View>
+        <TouchableOpacity
+          style={{
+            height: 40,
+            marginTop: 20,
+            backgroundColor: '#fd8f52',
+            justifyContent: 'center',
+            alignItems: 'center',
+            borderRadius: 20,
+          }}>
+          <Text style={{fontSize: 14, color: 'white'}}>Reservar</Text>
+        </TouchableOpacity>
+      </View>
     );
   }
 }
@@ -194,7 +274,7 @@ const styles = StyleSheet.create({
   },
   map: {
     width: '100%',
-    height: '72%',
+    height: '100%',
   },
   header: {
     flexDirection: 'row',
@@ -224,7 +304,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   footer: {
-    height: '100%',
+    width: '100%',
+    bottom: 0,
+    position: 'absolute',
     backgroundColor: '#fd8f52',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
