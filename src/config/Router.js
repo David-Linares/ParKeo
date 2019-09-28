@@ -14,7 +14,8 @@ class HomeScreen extends React.Component {
       user: {
         email: 'pruebas@pruebas.com',
         password: '123456'
-      }
+      },
+      messageAuth: ""
     };
   }
 
@@ -22,14 +23,13 @@ class HomeScreen extends React.Component {
     const { email, password } = this.state.user;
     firebase.auth().signInWithEmailAndPassword(email, password)
       .then((user) => {
+        this.setState({ user, messageAuth: "Usuario autenticado correctamente" });
         console.log(user);
       })
       .catch((error) => {
-        const { code, message } = error;
-        console.log(error);
-        // For details of error codes, see the docs
-        // The message contains the default Firebase string
-        // representation of the error
+        this.setState({
+          messageAuth: "Error en autenticación, lo sentimos tu usuario o contraseña no corresponden"
+        })
       });
   }
 
@@ -53,13 +53,7 @@ class HomeScreen extends React.Component {
   render() {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Text>Home Screen</Text>
-        <Button
-          title="Go to Details"
-          onPress={() => {
-            this.props.navigation.navigate('Details')
-          }}
-        />
+        <Text>{this.state.messageAuth}</Text>
       </View>
     );
   }
