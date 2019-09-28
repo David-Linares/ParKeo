@@ -1,7 +1,8 @@
 
 import React from 'react'
 import { View, Text, Button } from 'react-native'
-import { createAppContainer, createStackNavigator } from 'react-navigation'
+import {createAppContainer} from 'react-navigation';
+import {createStackNavigator} from 'react-navigation-stack';
 
 class HomeScreen extends React.Component {
   render() {
