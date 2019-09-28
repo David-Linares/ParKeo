@@ -1,4 +1,4 @@
-package com.parqueo;
+package com.parkeo.android;
 
 import com.facebook.react.ReactActivity;
 
