@@ -1,4 +1,4 @@
-import React, {PureComponent} from 'react';
+import React, { PureComponent } from 'react';
 import {
   View,
   StyleSheet,
@@ -7,20 +7,37 @@ import {
   Text,
   TextInput,
   Image,
+  Platform,
+  PermissionsAndroid,
   TouchableOpacity,
 } from 'react-native';
-import MapView from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import firebase from 'react-native-firebase';
-const {width, height} = Dimensions.get('window');
-import {FlatList} from 'react-native-gesture-handler';
+import Geolocation from '@react-native-community/geolocation';
+import { regionContainingPoints } from '../helpers/helpers';
+import { FlatList } from 'react-native-gesture-handler';
+
+const initialRegion = {
+  latitude: 4.6589943,
+  longitude: -74.1081384,
+  latitudeDelta: 0.0922,
+  longitudeDelta: 0.0421,
+}
+const { width, height } = Dimensions.get('window');
+import {
+  listaParqueaderos,
+  agregarVehiculo,
+  infoParqueadero,
+  infoVehiculo
+} from '../services/services';
 
 const timeList = [
-  {id: 1, name: 'Indefinido', isSelected: false},
-  {id: 2, name: 'Fijo', isSelected: false},
+  { id: 1, name: 'Indefinido', isSelected: false },
+  { id: 2, name: 'Fijo', isSelected: false },
 ];
 const vehicleTypeList = [
-  {id: 1, name: '1', isSelected: false},
-  {id: 2, name: '2', isSelected: false},
+  { id: 1, name: '1', isSelected: false },
+  { id: 2, name: '2', isSelected: false },
 ];
 
 export default class Home extends PureComponent {
@@ -37,18 +54,26 @@ export default class Home extends PureComponent {
       messageAuth: '',
       timeList,
       vehicleTypeList,
+      region: {
+        latitude: 4.6589943,
+        longitude: -74.1081384,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      },
+      markers: [],
       parkingSelected: null,
+      parqueaderos: [],
     };
   }
 
 
   onLogin = () => {
-    const {email, password} = this.state.user;
+    const { email, password } = this.state.user;
     firebase
       .auth()
       .signInWithEmailAndPassword(email, password)
       .then(user => {
-        this.setState({user, messageAuth: 'Usuario autenticado correctamente'});
+        this.setState({ user, messageAuth: 'Usuario autenticado correctamente' });
         console.log(user);
       })
       .catch(error => {
@@ -60,36 +85,63 @@ export default class Home extends PureComponent {
   };
 
   UNSAFE_componentWillMount() {
-    this.onLogin();
-    setTimeout(()=>{
-      this.setState({parkingSelected:"selected"})
-        
-    },5000);
+    listaParqueaderos()
+      .then(result => {
+        this.setState({ parqueaderos: result._docs })
+        console.log(result._docs);
+      }).catch(err => console.log('Error en listaParqueaderos', err));
+    infoParqueadero('xoMWRE8zOtaRIFoHfyAK')
+      .then(result => console.log('infoParqueadero', result))
+      .catch(err => console.log('Error en infoParqueadero', err));
+    infoVehiculo('dQnWzbWQNv6CPCJe9jAA')
+      .then(result => console.log('infoVehiculo', result))
+      .catch(err => console.log('Error en infoVehiculo', err));
+    this.getUserLocation();
   }
 
-  /* async UNSAFE_componentWillMount() {
+  selectParking = (parking) => {
+    this.setState({ parkingSelected: parking })
 
-    const documentSnapshot = await firebase.firestore()
-      .collection('usuarios')
-      .doc('L0swbgzJkcoQGEwiUhaT')
-      .get();
+  }
 
-    console.log('User data', documentSnapshot.data());
+  getUserLocation() {
+    try {
+      Geolocation.getCurrentPosition(info => {
+        console.log(info);
 
-  } */
+        this.setState({
+          region: regionContainingPoints([
+            {
+              latitude: info.coords.latitude,
+              longitude: info.coords.longitude,
+            }
+          ]),
+        });
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  onRegionChangeComplete = () => {
+    console.log("Complete region");
+    console.log(this.state.region);
+  }
+
+
 
   render() {
     return (
-      <SafeAreaView style={{flex: 1}}>
+      <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.header}>
-          <View style={{flex: 0.6}}>
-            <Text style={{fontSize: 20, color: 'white'}}>PARKEO</Text>
+          <View style={{ flex: 0.6 }}>
+            <Text style={{ fontSize: 20, color: 'white' }}>PARKEO</Text>
           </View>
-          <View style={{flex: 1.4}}>
+          <View style={{ flex: 1.4 }}>
             <View style={styles.viewSearch}>
               <TextInput
                 style={styles.textinputSearch}
-                onChangeText={text => this.setState({search: text})}
+                onChangeText={text => this.setState({ search: text })}
                 placeholder="Busca una ubicación"
                 value={this.state.search}
               />
@@ -103,13 +155,28 @@ export default class Home extends PureComponent {
 
         <MapView
           style={styles.map}
-          initialRegion={{
-            latitude: 37.78825,
-            longitude: -122.4324,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
-        />
+          showsUserLocation
+          initialRegion={initialRegion}
+          region={this.state.region}
+          showsMyLocationButton={false}
+          onRegionChangeComplete={this.onRegionChangeComplete}
+        >
+          {this.state.markers.map(marker => (
+            <Marker
+              keyExtractor={(item, key) => { return key }}
+              coordinate={marker.latlng}
+              title={marker.title}
+              description={marker.description}
+            />
+          ))}
+          {this.state.parqueaderos.map(parqueadero => (
+            <Marker
+              keyExtractor={(item, key) => { return key }}
+              coordinate={{ longitude: parqueadero._data.ubicacion._longitude, latitude: parqueadero._data.ubicacion._latitude }}
+              onPress={() => this.selectParking(parqueadero)}
+            />
+          ))}
+        </MapView>
         <View style={styles.footer}>
           <View
             style={{
@@ -120,13 +187,13 @@ export default class Home extends PureComponent {
               flexDirection: 'row',
               paddingHorizontal: 15,
             }}>
-            <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
               <Text>Tipo de vehiculo</Text>
               <FlatList
                 horizontal={true}
                 data={this.state.vehicleTypeList}
                 keyExtractor={(item, index) => index}
-                renderItem={({item}) => <Text>{item.name}</Text>}
+                renderItem={({ item }) => <Text>{item.name}</Text>}
               />
             </View>
             <View
@@ -141,7 +208,7 @@ export default class Home extends PureComponent {
                 data={this.state.timeList}
                 extraData={this.state}
                 keyExtractor={(item, index) => index}
-                renderItem={({item}) => this.renderItemTime(item)}
+                renderItem={({ item }) => this.renderItemTime(item)}
               />
             </View>
           </View>
@@ -156,7 +223,7 @@ export default class Home extends PureComponent {
     return (
       <TouchableOpacity
         onPress={() => this.onPressSelectedTime(item)}
-        style={[isSelected ? {backgroundColor: '#fd8f52'} : {}]}>
+        style={[isSelected ? { backgroundColor: '#fd8f52' } : {}]}>
         <Text>{item.name}</Text>
       </TouchableOpacity>
     );
@@ -169,7 +236,7 @@ export default class Home extends PureComponent {
       return item;
     });
 
-    this.setState({timeList});
+    this.setState({ timeList });
   };
 
   getParkingSelected() {
@@ -177,6 +244,8 @@ export default class Home extends PureComponent {
     if (parkingSelected == null) {
       return null;
     }
+    parkingSelected = parkingSelected._data;
+    console.log(parkingSelected);
     return (
       <View
         style={{
@@ -185,19 +254,19 @@ export default class Home extends PureComponent {
           paddingHorizontal: 70,
           paddingVertical: 40,
         }}>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-          <View style={{flex: 0.8}}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <View style={{ flex: 0.8 }}>
             <Image
-              style={{width: 60, height: 60}}
+              style={{ width: 60, height: 60 }}
               source={require('../assets/images/onboarding2.png')}
             />
           </View>
-          <View style={{flex: 1.2}}>
-            <View style={{backgroundColor: 'white'}}>
-              <Text style={{fontSize: 13}}>Calle 22 # 1132131</Text>
-              <Text style={{fontSize: 13}}> 8:00 am - 8:00 pm</Text>
-              <Text style={{fontSize: 13}}> 120 cop/min </Text>
-              <Text style={{fontSize: 13}}>Reserva inmediata</Text>
+          <View style={{ flex: 1.2 }}>
+            <View style={{ backgroundColor: 'white' }}>
+              <Text style={{ fontSize: 13 }}>Calle 22 # 1132131</Text>
+              <Text style={{ fontSize: 13 }}> { parkingSelected.horario }</Text>
+              <Text style={{ fontSize: 13 }}> { parkingSelected.precio } cop/min </Text>
+              <Text style={{ fontSize: 13 }}>Reserva inmediata</Text>
             </View>
           </View>
         </View>
@@ -210,7 +279,7 @@ export default class Home extends PureComponent {
             alignItems: 'center',
             borderRadius: 20,
           }}>
-          <Text style={{fontSize: 14, color: 'white'}}>Reservar</Text>
+          <Text style={{ fontSize: 14, color: 'white' }}>Reservar</Text>
         </TouchableOpacity>
       </View>
     );
