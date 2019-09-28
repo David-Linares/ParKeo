@@ -17,6 +17,11 @@ const AppNavigator = createStackNavigator({
   },
   Home: {
     screen: HomeScreen,
+    navigationOptions: {
+      header: null,
+      swipeEnabled: false,
+      gesturesEnabled: false
+    }
   },
 }, {
     initialRouteName: 'Home',
