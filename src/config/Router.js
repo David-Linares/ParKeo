@@ -6,7 +6,40 @@ import { createStackNavigator } from 'react-navigation-stack';
 import firebase from 'react-native-firebase';
 
 class HomeScreen extends React.Component {
-  async UNSAFE_componentWillMount() {
+
+  constructor(props) {
+    super(props)
+    this.state = {
+      isAuthenticated: false,
+      user: {
+        email: 'pruebas@pruebas.com',
+        password: '123456'
+      }
+    };
+  }
+
+  onLogin = () => {
+    const { email, password } = this.state.user;
+    firebase.auth().signInWithEmailAndPassword(email, password)
+      .then((user) => {
+        console.log(user);
+      })
+      .catch((error) => {
+        const { code, message } = error;
+        console.log(error);
+        // For details of error codes, see the docs
+        // The message contains the default Firebase string
+        // representation of the error
+      });
+  }
+
+  UNSAFE_componentWillMount() {
+
+    this.onLogin();
+
+  }
+
+  /* async UNSAFE_componentWillMount() {
 
     const documentSnapshot = await firebase.firestore()
       .collection('usuarios')
@@ -15,7 +48,7 @@ class HomeScreen extends React.Component {
 
     console.log('User data', documentSnapshot.data());
 
-  }
+  } */
 
   render() {
     return (
