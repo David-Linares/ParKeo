@@ -20,6 +20,7 @@
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		2DCD954D1E0B4F2C00145EB5 /* ParqueoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* ParqueoTests.m */; };
 		E8FA0AE4C2A27B0F7AC31BDC /* libPods-Parqueo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C13D9FAD10D1959D7DB8016 /* libPods-Parqueo.a */; };
+		F6EE4C8C233FBD1C00F72F31 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F6EE4C8B233FBD1C00F72F31 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,6 +67,7 @@
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 		F49152BB9C90384F3ABCC7D4 /* Pods-Parqueo-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Parqueo-tvOS.release.xcconfig"; path = "Target Support Files/Pods-Parqueo-tvOS/Pods-Parqueo-tvOS.release.xcconfig"; sourceTree = "<group>"; };
+		F6EE4C8B233FBD1C00F72F31 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		FF2B23091960D94A0885C1F8 /* Pods-Parqueo-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Parqueo-tvOSTests.release.xcconfig"; path = "Target Support Files/Pods-Parqueo-tvOSTests/Pods-Parqueo-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -125,6 +127,7 @@
 		13B07FAE1A68108700A75B9A /* Parqueo */ = {
 			isa = PBXGroup;
 			children = (
+				F6EE4C8B233FBD1C00F72F31 /* GoogleService-Info.plist */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -340,6 +343,7 @@
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
+				F6EE4C8C233FBD1C00F72F31 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
