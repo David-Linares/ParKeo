@@ -23,11 +23,7 @@ const initialRegion = {
   latitudeDelta: 0.0922,
   longitudeDelta: 0.0421,
 }
-<<<<<<< HEAD
-const {width, height} = Dimensions.get('window');
-=======
 const { width, height } = Dimensions.get('window');
->>>>>>> 273121bc5952edc84cb61db7d08791eb33829838
 import {
   listaParqueaderos,
   agregarVehiculo,
