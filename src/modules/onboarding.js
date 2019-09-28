@@ -1,6 +1,7 @@
 import React, {PureComponent} from 'react';
 import {View, Text, Image, Button} from 'react-native';
 import OnBoardingSwiper from 'react-native-onboarding-swiper';
+
 class OnBoarding extends PureComponent {
   constructor(props) {
     super(props);
