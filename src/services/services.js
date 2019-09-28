@@ -25,6 +25,12 @@ async function infoParqueadero(docParqueadero){
     return parqueadero;
 }
 
+async function agregarParqueadero(objetoParqueadero){
+    const nuevoParqueadero = await firebase.firestore()
+      .collection('Parqueadero');
+      await nuevoParqueadero.add(objetoParqueadero);
+}
+
 async function agregarVehiculo(objetoVehiculo){
     const nuevoVehiculo = await firebase.firestore()
       .collection('Vehiculo');
@@ -37,9 +43,30 @@ async function infoVehiculo(docVehiculo){
     return vehiculo;
 }
 
+async function listaVehiculos(docPropietario){
+    let vehiculosProp = [];
+    const propietario = await firebase.firestore()
+      .collection('Propietario').get(docPropietario);
+    propietario._data.vehiculo.forEach(element => {
+        let vehiculo = await firebase.firestore()
+          .collection('Vehiculo').doc(element).get();
+        vehiculosProp.push(vehiculo);
+    });
+    return vehiculosProp;
+}
+
+async function listaReviews(){
+    const reviews = await firebase.firestore()
+      .collection('Reviews').get();
+    return reviews;
+}
+
 export {
     listaParqueaderos,
-    agregarVehiculo,
     infoParqueadero,
-    infoVehiculo
+    agregarParqueadero,
+    listaVehiculos,
+    infoVehiculo,
+    agregarVehiculo,
+    listaReviews
 }

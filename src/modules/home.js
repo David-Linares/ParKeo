@@ -24,12 +24,13 @@ const initialRegion = {
   longitudeDelta: 0.0421,
 }
 const {width, height} = Dimensions.get('window');
-import { FlatList } from 'react-native-gesture-handler';
 import {
   listaParqueaderos,
   agregarVehiculo,
   infoParqueadero,
-  infoVehiculo
+  infoVehiculo,
+  listaVehiculos,
+  listaReviews
 } from '../services/services';
 
 const timeList = [
@@ -94,6 +95,9 @@ export default class Home extends PureComponent {
     infoVehiculo('dQnWzbWQNv6CPCJe9jAA')
       .then(result => console.log( 'infoVehiculo', result ))
       .catch(err => console.log('Error en infoVehiculo', err));
+    listaVehiculos('oVGL7kI6ALTgGPClH42z')
+      .then(result => console.log( 'listaVehiculos', result ))
+      .catch(err => console.log('Error en listaVehiculos', err) )
     this.getUserLocation();
     setTimeout(()=>{
       this.setState({parkingSelected:"selected"})
