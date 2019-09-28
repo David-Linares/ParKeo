@@ -33,7 +33,7 @@ const AppNavigator = createStackNavigator(
     },
   },
   {
-    initialRouteName: 'Reservate',
+    initialRouteName: 'Home',
   },
 );
 

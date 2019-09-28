@@ -15,7 +15,7 @@ import MapView, { Marker } from 'react-native-maps';
 import firebase from 'react-native-firebase';
 import Geolocation from '@react-native-community/geolocation';
 import { regionContainingPoints } from '../helpers/helpers';
-import {FlatList} from 'react-native-gesture-handler';
+import { FlatList } from 'react-native-gesture-handler';
 
 const initialRegion = {
   latitude: 4.6589943,
@@ -23,7 +23,11 @@ const initialRegion = {
   latitudeDelta: 0.0922,
   longitudeDelta: 0.0421,
 }
+<<<<<<< HEAD
 const {width, height} = Dimensions.get('window');
+=======
+const { width, height } = Dimensions.get('window');
+>>>>>>> 273121bc5952edc84cb61db7d08791eb33829838
 import {
   listaParqueaderos,
   agregarVehiculo,
@@ -34,12 +38,12 @@ import {
 } from '../services/services';
 
 const timeList = [
-  {id: 1, name: 'Indefinido', isSelected: false},
-  {id: 2, name: 'Fijo', isSelected: false},
+  { id: 1, name: 'Indefinido', isSelected: false },
+  { id: 2, name: 'Fijo', isSelected: false },
 ];
 const vehicleTypeList = [
-  {id: 1, name: '1', isSelected: false},
-  {id: 2, name: '2', isSelected: false},
+  { id: 1, name: '1', isSelected: false },
+  { id: 2, name: '2', isSelected: false },
 ];
 
 export default class Home extends PureComponent {
@@ -64,6 +68,7 @@ export default class Home extends PureComponent {
       },
       markers: [],
       parkingSelected: null,
+      parqueaderos: [],
     };
   }
 
@@ -87,22 +92,25 @@ export default class Home extends PureComponent {
 
   UNSAFE_componentWillMount() {
     listaParqueaderos()
-      .then(result => console.log( 'listaParqueaderos', result ))
-      .catch(err => console.log('Error en listaParqueaderos', err));
+      .then(result => {
+        this.setState({ parqueaderos: result._docs })
+        console.log(result._docs);
+      }).catch(err => console.log('Error en listaParqueaderos', err));
     infoParqueadero('xoMWRE8zOtaRIFoHfyAK')
-      .then(result => console.log( 'infoParqueadero', result ))
+      .then(result => console.log('infoParqueadero', result))
       .catch(err => console.log('Error en infoParqueadero', err));
     infoVehiculo('dQnWzbWQNv6CPCJe9jAA')
-      .then(result => console.log( 'infoVehiculo', result ))
+      .then(result => console.log('infoVehiculo', result))
       .catch(err => console.log('Error en infoVehiculo', err));
     listaVehiculos('oVGL7kI6ALTgGPClH42z')
       .then(result => console.log( 'listaVehiculos', result ))
       .catch(err => console.log('Error en listaVehiculos', err) )
     this.getUserLocation();
-    setTimeout(()=>{
-      this.setState({parkingSelected:"selected"})
-        
-    },5000);
+  }
+
+  selectParking = (parking) => {
+    this.setState({ parkingSelected: parking })
+
   }
 
   getUserLocation() {
@@ -164,10 +172,17 @@ export default class Home extends PureComponent {
         >
           {this.state.markers.map(marker => (
             <Marker
-              keyExtractor={(item, key)=>{return key}}
+              keyExtractor={(item, key) => { return key }}
               coordinate={marker.latlng}
               title={marker.title}
               description={marker.description}
+            />
+          ))}
+          {this.state.parqueaderos.map(parqueadero => (
+            <Marker
+              keyExtractor={(item, key) => { return key }}
+              coordinate={{ longitude: parqueadero._data.ubicacion._longitude, latitude: parqueadero._data.ubicacion._latitude }}
+              onPress={() => this.selectParking(parqueadero)}
             />
           ))}
         </MapView>
@@ -181,7 +196,7 @@ export default class Home extends PureComponent {
               flexDirection: 'row',
               paddingHorizontal: 15,
             }}>
-            <View style={{flex: 1, flexDirection: 'row', alignItems: 'center'}}>
+            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
               <Text>Tipo de vehiculo</Text>
               <FlatList
                 horizontal={true}
@@ -202,7 +217,7 @@ export default class Home extends PureComponent {
                 data={this.state.timeList}
                 extraData={this.state}
                 keyExtractor={(item, index) => index}
-                renderItem={({item}) => this.renderItemTime(item)}
+                renderItem={({ item }) => this.renderItemTime(item)}
               />
             </View>
           </View>
@@ -217,7 +232,7 @@ export default class Home extends PureComponent {
     return (
       <TouchableOpacity
         onPress={() => this.onPressSelectedTime(item)}
-        style={[isSelected ? {backgroundColor: '#fd8f52'} : {}]}>
+        style={[isSelected ? { backgroundColor: '#fd8f52' } : {}]}>
         <Text>{item.name}</Text>
       </TouchableOpacity>
     );
@@ -230,7 +245,7 @@ export default class Home extends PureComponent {
       return item;
     });
 
-    this.setState({timeList});
+    this.setState({ timeList });
   };
 
   getParkingSelected() {
@@ -238,6 +253,8 @@ export default class Home extends PureComponent {
     if (parkingSelected == null) {
       return null;
     }
+    parkingSelected = parkingSelected._data;
+    console.log(parkingSelected);
     return (
       <View
         style={{
@@ -246,23 +263,24 @@ export default class Home extends PureComponent {
           paddingHorizontal: 70,
           paddingVertical: 40,
         }}>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-          <View style={{flex: 0.8}}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <View style={{ flex: 0.8 }}>
             <Image
-              style={{width: 60, height: 60}}
+              style={{ width: 60, height: 60 }}
               source={require('../assets/images/onboarding2.png')}
             />
           </View>
-          <View style={{flex: 1.2}}>
-            <View style={{backgroundColor: 'white'}}>
-              <Text style={{fontSize: 13}}>Calle 22 # 1132131</Text>
-              <Text style={{fontSize: 13}}> 8:00 am - 8:00 pm</Text>
-              <Text style={{fontSize: 13}}> 120 cop/min </Text>
-              <Text style={{fontSize: 13}}>Reserva inmediata</Text>
+          <View style={{ flex: 1.2 }}>
+            <View style={{ backgroundColor: 'white' }}>
+              <Text style={{ fontSize: 13 }}>Calle 22 # 1132131</Text>
+              <Text style={{ fontSize: 13 }}> { parkingSelected.horario }</Text>
+              <Text style={{ fontSize: 13 }}> { parkingSelected.precio } cop/min </Text>
+              <Text style={{ fontSize: 13 }}>Reserva inmediata</Text>
             </View>
           </View>
         </View>
         <TouchableOpacity
+        onPress={()=>this.onPressReservateParking(parkingSelected)}
           style={{
             height: 40,
             marginTop: 20,
@@ -271,10 +289,15 @@ export default class Home extends PureComponent {
             alignItems: 'center',
             borderRadius: 20,
           }}>
-          <Text style={{fontSize: 14, color: 'white'}}>Reservar</Text>
+          <Text style={{ fontSize: 14, color: 'white' }}>Reservar</Text>
         </TouchableOpacity>
       </View>
     );
+  }
+
+  onPressReservateParking=(parkingSelected)=>{
+    this.props.navigation.navigate("Reservate", parkingSelected );
+
   }
 }
 
