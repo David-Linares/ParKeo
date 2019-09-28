@@ -27,13 +27,13 @@ async function infoParqueadero(docParqueadero){
 
 async function agregarVehiculo(objetoVehiculo){
     const nuevoVehiculo = await firebase.firestore()
-      .collection('vehiculo');
+      .collection('Vehiculo');
     await nuevoVehiculo.add(objetoVehiculo);
 }
 
 async function infoVehiculo(docVehiculo){
     const vehiculo = await firebase.firestore()
-      .collection('vehiculo').doc(docVehiculo).get();
+      .collection('Vehiculo').doc(docVehiculo).get();
     return vehiculo;
 }
 
