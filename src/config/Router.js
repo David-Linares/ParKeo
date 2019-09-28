@@ -1,10 +1,22 @@
 
 import React from 'react'
 import { View, Text, Button } from 'react-native'
-import {createAppContainer} from 'react-navigation';
-import {createStackNavigator} from 'react-navigation-stack';
+import { createAppContainer } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack';
+import firebase from 'react-native-firebase';
 
 class HomeScreen extends React.Component {
+  async UNSAFE_componentWillMount() {
+
+    const documentSnapshot = await firebase.firestore()
+      .collection('usuarios')
+      .doc('L0swbgzJkcoQGEwiUhaT')
+      .get();
+
+    console.log('User data', documentSnapshot.data());
+
+  }
+
   render() {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -12,28 +24,28 @@ class HomeScreen extends React.Component {
         <Button
           title="Go to Details"
           onPress={() => {
-            this.props.navigation.navigate('Details') 
+            this.props.navigation.navigate('Details')
           }}
         />
       </View>
     );
-  }  
+  }
 }
 
 class DetailsScreen extends React.Component {
   render() {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-       <Text>Details Screen</Text>
+        <Text>Details Screen</Text>
         <Button
           title="Go to Home"
           onPress={() => {
-            this.props.navigation.navigate('Home') 
+            this.props.navigation.navigate('Home')
           }}
         />
       </View>
     );
-  }  
+  }
 }
 
 const AppNavigator = createStackNavigator({
@@ -44,7 +56,7 @@ const AppNavigator = createStackNavigator({
     screen: DetailsScreen,
   },
 }, {
-    initialRouteName: 'Home',
+  initialRouteName: 'Home',
 });
 
 export default createAppContainer(AppNavigator)
