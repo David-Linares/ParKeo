@@ -271,6 +271,7 @@ export default class Home extends PureComponent {
           </View>
         </View>
         <TouchableOpacity
+        onPress={()=>this.onPressReservateParking(parkingSelected)}
           style={{
             height: 40,
             marginTop: 20,
@@ -283,6 +284,11 @@ export default class Home extends PureComponent {
         </TouchableOpacity>
       </View>
     );
+  }
+
+  onPressReservateParking=(parkingSelected)=>{
+    this.props.navigation.navigate("Reservate", parkingSelected );
+
   }
 }
 
