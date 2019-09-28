@@ -12,6 +12,7 @@
     "reload": "adb shell input keyevent 82"
   },
   "dependencies": {
+    "@react-native-community/geolocation": "^2.0.2",
     "react": "16.9.0",
     "react-native": "0.61.1",
     "react-native-firebase": "^5.5.6",

@@ -1,4 +1,4 @@
-import React, {PureComponent} from 'react';
+import React, { PureComponent } from 'react';
 import {
   View,
   StyleSheet,
@@ -7,15 +7,24 @@ import {
   Text,
   TextInput,
   Image,
-  
+  Platform,
+  PermissionsAndroid
 } from 'react-native';
-import MapView from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import firebase from 'react-native-firebase';
-const {width, height} = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 import { FlatList } from 'react-native-gesture-handler';
+import Geolocation from '@react-native-community/geolocation';
+import { regionContainingPoints } from '../helpers/helpers';
 
-const timeList = [{ id:1, name:"Indefinido", isSelected:false  },{ id:2, name:"Fijo", isSelected:false }, ];
-const vehicleTypeList = [{ id:1, name:"1", isSelected:false  },{ id:2, name:"2", isSelected:false }, ];
+const timeList = [{ id: 1, name: "Indefinido", isSelected: false }, { id: 2, name: "Fijo", isSelected: false },];
+const vehicleTypeList = [{ id: 1, name: "1", isSelected: false }, { id: 2, name: "2", isSelected: false },];
+const initialRegion = {
+  latitude: 4.6589943,
+  longitude: -74.1081384,
+  latitudeDelta: 0.0922,
+  longitudeDelta: 0.0421,
+}
 
 export default class Home extends PureComponent {
   constructor(props) {
@@ -30,17 +39,24 @@ export default class Home extends PureComponent {
       },
       messageAuth: '',
       timeList,
-      vehicleTypeList
+      vehicleTypeList,
+      region: {
+        latitude: 4.6589943,
+        longitude: -74.1081384,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      },
+      markers: []
     };
   }
 
   onLogin = () => {
-    const {email, password} = this.state.user;
+    const { email, password } = this.state.user;
     firebase
       .auth()
       .signInWithEmailAndPassword(email, password)
       .then(user => {
-        this.setState({user, messageAuth: 'Usuario autenticado correctamente'});
+        this.setState({ user, messageAuth: 'Usuario autenticado correctamente' });
         console.log(user);
       })
       .catch(error => {
@@ -52,32 +68,47 @@ export default class Home extends PureComponent {
   };
 
   UNSAFE_componentWillMount() {
-    this.onLogin();
+    this.getUserLocation();
   }
 
-  /* async UNSAFE_componentWillMount() {
+  getUserLocation() {
+    try {
+      Geolocation.getCurrentPosition(info => {
+        console.log(info);
 
-    const documentSnapshot = await firebase.firestore()
-      .collection('usuarios')
-      .doc('L0swbgzJkcoQGEwiUhaT')
-      .get();
+        this.setState({
+          region: regionContainingPoints([
+            {
+              latitude: info.coords.latitude,
+              longitude: info.coords.longitude,
+            }
+          ]),
+        });
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
-    console.log('User data', documentSnapshot.data());
+  onRegionChangeComplete = () => {
+    console.log("Complete region");
+    console.log(this.state.region);
+  }
 
-  } */
+
 
   render() {
     return (
-      <SafeAreaView style={{flex: 1}}>
+      <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.header}>
-          <View style={{flex: 0.6}}>
-            <Text style={{fontSize: 20, color: 'white'}}>PARKEO</Text>
+          <View style={{ flex: 0.6 }}>
+            <Text style={{ fontSize: 20, color: 'white' }}>PARKEO</Text>
           </View>
-          <View style={{flex: 1.4}}>
+          <View style={{ flex: 1.4 }}>
             <View style={styles.viewSearch}>
               <TextInput
                 style={styles.textinputSearch}
-                onChangeText={text => this.setState({search: text})}
+                onChangeText={text => this.setState({ search: text })}
                 placeholder="Busca una ubicación"
                 value={this.state.search}
               />
@@ -91,13 +122,21 @@ export default class Home extends PureComponent {
 
         <MapView
           style={styles.map}
-          initialRegion={{
-            latitude: 37.78825,
-            longitude: -122.4324,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
-        />
+          showsUserLocation
+          initialRegion={initialRegion}
+          region={this.state.region}
+          showsMyLocationButton={false}
+          onRegionChangeComplete={this.onRegionChangeComplete}
+        >
+          {this.state.markers.map(marker => (
+            <Marker
+              keyExtractor={(item, key)=>{return key}}
+              coordinate={marker.latlng}
+              title={marker.title}
+              description={marker.description}
+            />
+          ))}
+        </MapView>
         <View style={styles.footer}>
           <View
             style={{
@@ -109,29 +148,29 @@ export default class Home extends PureComponent {
               paddingHorizontal: 15,
             }}>
             <View
-              style={{flex: 1,  flexDirection: 'row', alignItems:'center'}}>
+              style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
               <Text>Tipo de vehiculo</Text>
               <FlatList
                 horizontal={true}
                 data={this.state.vehicleTypeList}
-                keyExtractor={(item, index)=>index}
-                renderItem={({item})=><Text>{item.name}</Text>}
-                />
+                keyExtractor={(item, index) => index}
+                renderItem={({ item }) => <Text>{item.name}</Text>}
+              />
             </View>
             <View
               style={{
                 flex: 1,
                 flexDirection: 'row',
-                alignItems:'center'
+                alignItems: 'center'
               }}>
-                <Text>Tiempo</Text>
-                <FlatList
+              <Text>Tiempo</Text>
+              <FlatList
                 horizontal={true}
                 data={this.state.timeList}
-                keyExtractor={(item, index)=>index}
-                renderItem={({item})=><Text>{item.name}</Text>}
-                />
-              </View>
+                keyExtractor={(item, index) => index}
+                renderItem={({ item }) => <Text>{item.name}</Text>}
+              />
+            </View>
           </View>
         </View>
       </SafeAreaView>
