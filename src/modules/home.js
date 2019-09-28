@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
-import { View } from 'react-native';
+import { View, StyleSheet, Dimensions } from 'react-native';
 import MapView from 'react-native-maps';
+import firebase from 'react-native-firebase';
+const { width, height } = Dimensions.get('window')
 export default class Home extends PureComponent {
   constructor(props) {
     super(props);
@@ -49,14 +51,31 @@ export default class Home extends PureComponent {
 
   render() {
     return (
-      <MapView
-        initialRegion={{
-          latitude: 37.78825,
-          longitude: -122.4324,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}
-      />
+      <View style={styles.mapContainer}>
+        <MapView
+          style={styles.map}
+          initialRegion={{
+            latitude: 37.78825,
+            longitude: -122.4324,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+        />
+      </View>
     );
   }
 }
+
+const styles = StyleSheet.create({
+  mapContainer: {
+    width: '100%',
+    height: Dimensions.get('window').height,
+    position: 'relative',
+    zIndex: 0,
+    flex: this.statusBarHeight
+  },
+  map: {
+    width: '100%',
+    height: '100%'
+  }
+})
