@@ -13,6 +13,12 @@ import MapView from 'react-native-maps';
 import firebase from 'react-native-firebase';
 const {width, height} = Dimensions.get('window');
 import { FlatList } from 'react-native-gesture-handler';
+import {
+  listaParqueaderos,
+  agregarVehiculo,
+  infoParqueadero,
+  infoVehiculo
+} from '../services/services';
 
 const timeList = [{ id:1, name:"Indefinido", isSelected:false  },{ id:2, name:"Fijo", isSelected:false }, ];
 const vehicleTypeList = [{ id:1, name:"1", isSelected:false  },{ id:2, name:"2", isSelected:false }, ];
@@ -53,6 +59,15 @@ export default class Home extends PureComponent {
 
   UNSAFE_componentWillMount() {
     this.onLogin();
+    listaParqueaderos()
+      .then(result => console.log( 'listaParqueaderos', result ))
+      .catch(err => console.log('Error en listaParqueaderos', err));
+    infoParqueadero('xoMWRE8zOtaRIFoHfyAK')
+      .then(result => console.log( 'infoParqueadero', result ))
+      .catch(err => console.log('Error en infoParqueadero', err));
+    infoVehiculo('dQnWzbWQNv6CPCJe9jAA')
+      .then(result => console.log( 'infoVehiculo', result ))
+      .catch(err => console.log('Error en infoVehiculo', err));
   }
 
   /* async UNSAFE_componentWillMount() {
