@@ -264,14 +264,14 @@ export default class Home extends PureComponent {
           <View style={{ flex: 1.2 }}>
             <View style={{ backgroundColor: 'white' }}>
               <Text style={{ fontSize: 13 }}>Calle 22 # 1132131</Text>
-              <Text style={{ fontSize: 13 }}> { parkingSelected.horario }</Text>
-              <Text style={{ fontSize: 13 }}> { parkingSelected.precio } cop/min </Text>
+              <Text style={{ fontSize: 13 }}> {parkingSelected.horario}</Text>
+              <Text style={{ fontSize: 13 }}> {parkingSelected.precio} cop/min </Text>
               <Text style={{ fontSize: 13 }}>Reserva inmediata</Text>
             </View>
           </View>
         </View>
         <TouchableOpacity
-        onPress={()=>this.onPressReservateParking(parkingSelected)}
+          onPress={() => this.onPressReservateParking(parkingSelected)}
           style={{
             height: 40,
             marginTop: 20,
@@ -286,8 +286,8 @@ export default class Home extends PureComponent {
     );
   }
 
-  onPressReservateParking=(parkingSelected)=>{
-    this.props.navigation.navigate("Reservate", parkingSelected );
+  onPressReservateParking = (parkingSelected) => {
+    this.props.navigation.navigate("Reservate", parkingSelected);
 
   }
 }
