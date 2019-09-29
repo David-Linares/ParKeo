@@ -47,7 +47,7 @@ async function listaVehiculos(docPropietario){
     let vehiculosProp = [];
     const propietario = await firebase.firestore()
       .collection('Propietario').get(docPropietario);
-    propietario._data.vehiculo.forEach(element => {
+    propietario._data.vehiculo.forEach(async element => {
         let vehiculo = await firebase.firestore()
           .collection('Vehiculo').doc(element).get();
         vehiculosProp.push(vehiculo);
